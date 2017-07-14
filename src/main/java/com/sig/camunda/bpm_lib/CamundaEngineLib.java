@@ -3,6 +3,8 @@ package com.sig.camunda.bpm_lib;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 
@@ -11,7 +13,8 @@ import com.sig.camunda.bpm_dto.TaskDTO;
 public class CamundaEngineLib implements CamundaEngine{
 
 	public String processCreate(TaskDTO tarea, Map<String, Object> variables) {
-		// TODO Auto-generated method stub
+		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+		processEngine.getRuntimeService().startProcessInstanceByKey("cam",variables);
 		return null;
 	}
 
