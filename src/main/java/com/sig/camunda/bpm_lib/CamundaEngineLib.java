@@ -12,8 +12,14 @@ import com.sig.camunda.bpm_dto.TaskDTO;
 
 public class CamundaEngineLib implements CamundaEngine{
 
+	private ProcessEngine processEngine;
+	
 	public CamundaEngineLib(){
-		
+		processEngine = ProcessEngines.getDefaultProcessEngine();
+	}
+	
+	public CamundaEngineLib(ProcessEngine processEngine){
+		this.processEngine = processEngine;
 	}
 	
 	public String processCreate(TaskDTO tarea, Map<String, Object> variables) {
@@ -27,7 +33,7 @@ public class CamundaEngineLib implements CamundaEngine{
 
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person,
 		Map<String, Object> variables) {
-		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+
 		String InstanciaId = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,variables).getId();
 		return InstanciaId;
 	}
@@ -53,7 +59,6 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 
 	public void instanceSetVariableByTaskId(String bpmtaskid, String key, Object value) {
-		// TODO Auto-generated method stub
 		
 	}
 
