@@ -44,7 +44,7 @@ public interface CamundaEngine  {
 	public List<TaskDTO> taskListByUser();
 //	Lee las tareas asignadas del usuario que inicio sesión en el sistema.
 	
-	public List<TaskDTO> taskListByProcessInstanceId();
+	public List<TaskDTO> taskListByProcessInstanceId(String processInstanceId);
 //	Lee las tareas activas de la instancia de proceso.
 	
 	public List<TaskDTO> historyTaskListByUser();
