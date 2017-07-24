@@ -10,6 +10,7 @@ import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
 
 import com.sig.camunda.bpm_dto.TaskDTO;
@@ -46,14 +47,16 @@ public class CamundaEngineLib implements CamundaEngine{
 		Map<String, Object> variables) {
 		this.description = description;
 		this.person = person;
-		String InstanciaId = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey,variables).getId();
+		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey,variables);
+		String InstanciaId = processInstance.getId();
 		return InstanciaId;
 	}
 
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person) {
 		this.description = description;
 		this.person = person;
-		String InstanciaId = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey).getId();
+		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey);
+		String InstanciaId = processInstance.getId();
 		return InstanciaId;
 	}
 
@@ -154,6 +157,7 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 
 	public void updateDescription(String processDefinitionKey, String businessKey, String description) {
+		
 		// TODO Auto-generated method stub
 		
 	}
