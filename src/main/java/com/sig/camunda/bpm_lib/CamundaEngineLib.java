@@ -33,10 +33,12 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 	
 	public String processCreate(TaskDTO tarea, Map<String, Object> variables) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String processCreate(TaskDTO tarea) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -62,6 +64,7 @@ public class CamundaEngineLib implements CamundaEngine{
 
 	public String processDelete(String bpminstanceid) {
 		// TODO Auto-generated method stub
+		processEngine.getRuntimeService().deleteProcessInstance(bpminstanceid, "");
 		return null;
 	}
 
@@ -143,7 +146,7 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 
 	public void taskUpdateDescription(String bpmtaskid, String description) {
-		
+		// TODO Auto-generated method stub
 	}
 
 	public void taskDelegate(String bpmtaskid, Integer idpersona) {
@@ -194,6 +197,7 @@ public class CamundaEngineLib implements CamundaEngine{
 		taskdto.setAssignee(task.getAssignee());
 		return taskdto;
 	}
+	
 	private TaskDTO convetHistoricTask(HistoricTaskInstance historicTaskInstance){
 		TaskDTO taskdto = new TaskDTO();
 		taskdto.setId(historicTaskInstance.getId());
