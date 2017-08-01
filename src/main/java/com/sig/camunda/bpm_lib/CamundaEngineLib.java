@@ -5,24 +5,53 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.sig.camunda.bpm_dto.InternalException;
 import com.sig.camunda.bpm_dto.TaskDTO;
 
 public class CamundaEngineLib implements CamundaEngine{
 
+	private static final Logger LOG;
+	private static final String USER_CREATOR = "usercreator";
+	private static final String CASE_PERSON = "case.person";
+	private static final String CASE_DESCRIPTION = "case.description";
+	private static final String USER_AUTHORIZATION = "user.authorization";
+	
 	private ProcessEngine processEngine;
+	private RuntimeService runtimeService;
+	private TaskService taskService;
+	private FormService formService;
+	private RepositoryService repositoryService;
+	
 	private String person;
-	private String description;
+	
+	static {
+		LOG = LoggerFactory.getLogger(CamundaEngineLib.class);
+	}
 	
 	public CamundaEngineLib(){
 		this.processEngine = ProcessEngines.getDefaultProcessEngine();
+		if (this.processEngine == null) {
+			throw new InternalException("DefaultProcessEngine no puede ser NULL");
+		}
+		this.runtimeService = this.processEngine.getRuntimeService();
+		this.taskService = this.processEngine.getTaskService();
+
+		this.formService = this.processEngine.getFormService();
+		this.repositoryService = this.processEngine.getRepositoryService();
 	}
 	
 	public CamundaEngineLib(ProcessEngine processEngine){
@@ -33,19 +62,21 @@ public class CamundaEngineLib implements CamundaEngine{
 		this.processEngine = ProcessEngines.getProcessEngine(processEngineName);
 	}
 	
+	public String processCreate(TaskDTO tarea) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public String processCreate(TaskDTO tarea, Map<String, Object> variables) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public String processCreate(TaskDTO tarea) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person,
 		Map<String, Object> variables) {
-		this.description = description;
+		//this.description = description;
 		this.person = person;
 		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey,variables);
 		String InstanciaId = processInstance.getId();
@@ -53,7 +84,7 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person) {
-		this.description = description;
+		//this.description = description;
 		this.person = person;
 		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey);
 		String InstanciaId = processInstance.getId();
