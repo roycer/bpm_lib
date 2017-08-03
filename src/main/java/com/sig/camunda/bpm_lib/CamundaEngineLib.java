@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.form.FormField;
+import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.DelegationState;
 import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +39,7 @@ public class CamundaEngineLib implements CamundaEngine{
 	private TaskService taskService;
 	private FormService formService;
 	private RepositoryService repositoryService;
-	
-	private String person;
+	private HistoryService historyService;
 	
 	static {
 		LOG = LoggerFactory.getLogger(CamundaEngineLib.class);
@@ -52,6 +55,8 @@ public class CamundaEngineLib implements CamundaEngine{
 
 		this.formService = this.processEngine.getFormService();
 		this.repositoryService = this.processEngine.getRepositoryService();
+		this.historyService = this.processEngine.getHistoryService();
+		
 	}
 	
 	public CamundaEngineLib(ProcessEngine processEngine){
@@ -62,79 +67,63 @@ public class CamundaEngineLib implements CamundaEngine{
 		this.processEngine = ProcessEngines.getProcessEngine(processEngineName);
 	}
 	
-	public String processCreate(TaskDTO tarea) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	public String processCreate(TaskDTO tarea, Map<String, Object> variables) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	
-
-	public String processCreate(String processDefinitionKey, String businessKey, String description, String person,
-		Map<String, Object> variables) {
-		//this.description = description;
-		this.person = person;
-		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey,variables);
-		String InstanciaId = processInstance.getId();
-		return InstanciaId;
-	}
-
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person) {
-		//this.description = description;
-		this.person = person;
-		ProcessInstance processInstance = processEngine.getRuntimeService().startProcessInstanceByKey(processDefinitionKey,businessKey);
-		String InstanciaId = processInstance.getId();
-		return InstanciaId;
+		return processCreate(processDefinitionKey,businessKey,description,person,null);
 	}
 
-	public String processUpdate(TaskDTO tarea) {
-		// TODO Auto-generated method stub
-		return null;
+	public String processCreate(String processDefinitionKey, String businessKey, String description, String person, Map<String, Object> variables) {
+		
+		if (variables == null) 
+			variables = new HashMap();	
+		if ((!(variables.containsKey("description"))) && (description != null))
+			variables.put("description", description);
+		if ((!(variables.containsKey("person"))) && (person != null))
+			variables.put("person", person);
+		
+		ProcessInstance processInstance = this.runtimeService.startProcessInstanceByKey(processDefinitionKey,businessKey,variables);
+		return processInstance.getId();
 	}
 
-	public String processDelete(String bpminstanceid) {
-		// TODO Auto-generated method stub
-		processEngine.getRuntimeService().deleteProcessInstance(bpminstanceid, "");
-		return null;
-	}
-
-	public JSONObject inboxGetInfoInit() {
-		// TODO Auto-generated method stub
-		return null;
+	public void processDelete(String bpminstanceid) {
+		this.runtimeService.deleteProcessInstance(bpminstanceid, null);
 	}
 
 	public void instanceSetVariableByTaskId(String bpmtaskid, String key, Object value) {
-		processEngine.getTaskService().setVariableLocal(bpmtaskid, key, value);
+		Task t = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult();
+		this.runtimeService.setVariable(t.getExecutionId(), key, value);
 	}
 
-	public void instanceSetVariableByTaskId(String bpmtaskid, String key, Map<String, Object> variables) {
-		processEngine.getTaskService().setVariableLocal(bpmtaskid, key, variables);
+	public void instanceSetVariableByTaskId(String bpmtaskid, Map<String, Object> variables) {
+		Task t = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult();
+		this.runtimeService.setVariables(t.getExecutionId(), variables);
 	}
 
-	public List<TaskDTO> taskListByUser() {
-		List<org.camunda.bpm.engine.task.Task> tasks = processEngine.getTaskService().createTaskQuery().taskAssignee(person).list();
+	public List<TaskDTO> taskListByUser(String person) {
+		List<Task> tasks = this.taskService.createTaskQuery().taskAssignee(person).list();
 		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
-		for(org.camunda.bpm.engine.task.Task i:tasks){
+		for(Task i:tasks)
 			taskDTOs.add(convertTask(i));
-		}
+		return taskDTOs;
+	}
+	
+	public List<TaskDTO> taskListByUserAndInstanceId(String processInstanceId, String person) {
+		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
+		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		for(Task i:tasks)
+			taskDTOs.add(convertTask(i));
 		return taskDTOs;
 	}
 
 	public List<TaskDTO> taskListByProcessInstanceId(String processInstanceId) {
-		List<Task> tasks = processEngine.getTaskService().createTaskQuery().processDefinitionId(processInstanceId).list();
+		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
 		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
-		for(Task i:tasks){
+		for(Task i:tasks)
 			taskDTOs.add(convertTask(i));
-		}
 		return taskDTOs;
 	}
 
-	public List<TaskDTO> historyTaskListByUser() {
-		List<HistoricTaskInstance> historicTaskInstances =	processEngine.getHistoryService().createHistoricTaskInstanceQuery().taskAssignee(person).list();
+	public List<TaskDTO> historyTaskListByUser(String processInstanceId, String person) {
+		List<HistoricTaskInstance> historicTaskInstances =	this.historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
 		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
 		for(HistoricTaskInstance i:historicTaskInstances){
 			taskDTOs.add(convetHistoricTask(i));
@@ -143,48 +132,45 @@ public class CamundaEngineLib implements CamundaEngine{
 	}
 
 	public void taskComplete(String bpmtaskid) {
-		processEngine.getTaskService().complete(bpmtaskid);
+		taskComplete(bpmtaskid,null);
 	}
 
 	public void taskComplete(String bpmtaskid, String varKey, Object varValue) {
 		Map<String,Object> variables = new HashMap<String, Object>();;
 		variables.put(varKey, varValue);
-		processEngine.getTaskService().complete(bpmtaskid);
+		taskComplete(bpmtaskid,variables);
 	}
 
 	public void taskComplete(String bpmtaskid, Map<String, Object> variables) {
-		processEngine.getTaskService().complete(bpmtaskid, variables);
+		DelegationState state = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult().getDelegationState();
+		if (DelegationState.PENDING.equals(state))
+			this.taskService.resolveTask(bpmtaskid, variables);
+		else
+			this.taskService.complete(bpmtaskid, variables);
 	}
 
 	public JSONObject taskGetForm(String bpmtaskid) {
-		return null;
+		JSONObject jsonObject = new JSONObject();
+		TaskFormData taskFormData = this.formService.getTaskFormData(bpmtaskid);
+		jsonObject.put("form", taskFormData.getFormKey());
+		jsonObject.put("fields", taskFormData.getFormFields());
+		return jsonObject;
 	}
 
-	public JSONArray taskCandidateListByUser() {
-		// TODO Auto-generated method stub
-		return null;
+	public void taskClaim(String bpmtaskid, String person) {
+		this.taskService.claim(bpmtaskid, person);
 	}
 
-	public List<TaskDTO> getCandidates(String taskid) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void taskClaim(String bpmtaskid) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void taskAssignee(String bpmtaskid, Integer idpersona) {
-		processEngine.getTaskService().setAssignee(bpmtaskid, idpersona.toString());
+	public void taskAssignee(String bpmtaskid, String person) {
+		this.taskService.setAssignee(bpmtaskid, person);
 	}
 
 	public void taskUpdateDescription(String bpmtaskid, String description) {
-		// TODO Auto-generated method stub
+		
 	}
 
-	public void taskDelegate(String bpmtaskid, Integer idpersona) {
-		processEngine.getTaskService().delegateTask(bpmtaskid, idpersona.toString());
+	public void taskDelegate(String bpmtaskid, String person) {
+		this.taskService.delegateTask(bpmtaskid,person);
 	}
 
 	public void updateDescription(String processDefinitionKey, String businessKey, String description) {
@@ -204,19 +190,34 @@ public class CamundaEngineLib implements CamundaEngine{
 		
 	}
 
-	public void deleteInstance(String processDefinitionKey, String businessKey) {
-		// TODO Auto-generated method stub
-		
+	public boolean deleteInstance(String processDefinitionKey, String businessKey) {
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		if (processInstances.size() > 0) {
+			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
+			this.runtimeService.deleteProcessInstance(pi.getProcessInstanceId(), "Eliminado por el usuario");
+			return true;
+		}
+		return false;
 	} 
 
-	public void suspendInstance(String processDefinitionKey, String businessKey) {
-		// TODO Auto-generated method stub
-		
+	public boolean suspendInstance(String processDefinitionKey, String businessKey) {
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		if (processInstances.size() > 0) {
+			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
+			this.runtimeService.suspendProcessInstanceById(pi.getProcessInstanceId());
+			return true;
+		}
+		return false;
 	}
 
-	public void activateInstance(String processDefinitionKey, String businessKey) {
-		// TODO Auto-generated method stub
-		
+	public boolean activateInstance(String processDefinitionKey, String businessKey) {
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		if (processInstances.size() > 0) {
+			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
+			this.runtimeService.activateProcessInstanceById(pi.getProcessInstanceId());
+			return true;
+		}
+		return false;
 	}
 
 	private TaskDTO convertTask(Task task){		
@@ -247,4 +248,6 @@ public class CamundaEngineLib implements CamundaEngine{
 		taskdto.setEndtime(historicTaskInstance.getEndTime());
 		return taskdto;
 	}
+	
+
 }
