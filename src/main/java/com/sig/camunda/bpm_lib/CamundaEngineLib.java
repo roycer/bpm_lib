@@ -17,6 +17,7 @@ import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
+import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.DelegationState;
 import org.camunda.bpm.engine.task.Task;
@@ -173,16 +174,26 @@ public class CamundaEngineLib implements CamundaEngine{
 		this.taskService.delegateTask(bpmtaskid,person);
 	}
 
-	public void updateDescription(String processDefinitionKey, String businessKey, String description) {
-		
-		// TODO Auto-generated method stub
+	public boolean updateDescription(String processDefinitionKey, String businessKey, String description) {
+		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		if (executions.size() > 0) {
+			Execution execution = (Execution) executions.get(0);
+			this.runtimeService.setVariable(execution.getId(), "description", description);
+			return true;
+		}
+		return false;
 		
 	}
 
-	public void updateDescriptionAndPerson(String processDefinitionKey, String businessKey, String description,
-			String person) {
-		// TODO Auto-generated method stub
-		
+	public boolean updateDescriptionAndPerson(String processDefinitionKey, String businessKey, String description, String person) {
+		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		if (executions.size() > 0) {
+			Execution execution = (Execution) executions.get(0);
+			this.runtimeService.setVariable(execution.getId(), "description", description);
+			this.runtimeService.setVariable(execution.getId(), "person", person);
+			return true;
+		}
+		return false;
 	}
 
 	public void fireEvent(String eventName, String businessKey) {

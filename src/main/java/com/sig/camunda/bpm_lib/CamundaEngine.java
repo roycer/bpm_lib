@@ -76,10 +76,10 @@ public interface CamundaEngine  {
 	public void taskDelegate(String bpmtaskid,String person);
 //	Delega una tarea a un usuario específico.
 	
-	public void updateDescription(String processDefinitionKey,String businessKey,String description);
+	public boolean updateDescription(String processDefinitionKey,String businessKey,String description);
 //	Actualiza la descripción de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
 	
-	public void updateDescriptionAndPerson(String processDefinitionKey,String businessKey,String description,String person);
+	public boolean updateDescriptionAndPerson(String processDefinitionKey,String businessKey,String description,String person);
 //	Actualiza la descripción y la persona/área de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
 	
 	public void fireEvent(String eventName,String businessKey);

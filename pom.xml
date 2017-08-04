@@ -6,7 +6,6 @@
   <artifactId>bpm_lib</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-
   <name>bpm_lib</name>
   <url>http://maven.apache.org</url>
 
@@ -31,16 +30,16 @@
 	</dependencies>
 	<build>
 		<plugins>
-		<plugin>
-	       <groupId>org.apache.maven.plugins</groupId>
-	       <artifactId>maven-compiler-plugin</artifactId>
-	       <version>3.1</version>
-	       <configuration>
-	         <source>1.8</source>
-	         <target>1.8</target>
-	       </configuration>
-	     </plugin>
-	</plugins>
+			<plugin>
+		       <groupId>org.apache.maven.plugins</groupId>
+		       <artifactId>maven-compiler-plugin</artifactId>
+		       <version>3.1</version>
+		       <configuration>
+		         <source>1.8</source>
+		         <target>1.8</target>
+		       </configuration>
+		     </plugin>
+		</plugins>
 	</build>
 
 </project>
