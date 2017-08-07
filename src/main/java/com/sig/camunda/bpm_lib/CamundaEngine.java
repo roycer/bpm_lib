@@ -79,7 +79,7 @@ public class CamundaEngine implements Camunda{
 	
 	public List<String> getProcessInstances(String proccessDefinitionKey){
 		List<String> strProcessInstances = new ArrayList<>();
-		List<ProcessInstance> processInstances = processEngine.getRuntimeService().createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).list();
 		for(ProcessInstance i: processInstances){
 			strProcessInstances.add(i.getProcessInstanceId());
 		}
