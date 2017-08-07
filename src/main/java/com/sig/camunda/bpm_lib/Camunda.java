@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 
 import com.sig.camunda.bpm_dto.MyEventSubscription;
+import com.sig.camunda.bpm_dto.MyProcessInstance;
 import com.sig.camunda.bpm_dto.MyTask;
 
 
@@ -24,10 +25,10 @@ public interface Camunda  {
 //	public String processUpdate (MyTask tarea);
 //	Actualiza la información de la instancia de proceso.
 	
-	public List<String> getProcessInstances(String proccessDefinitionKey);
+	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey);
 	// lee todos los procesos instanciados
 	
-	public List<String> getProcessInstances();
+	public List<MyProcessInstance> getProcessInstances();
 	// lee todos los procesos instanciados
 	
 	public void processDelete (String bpminstanceid);

@@ -1,6 +1,7 @@
 package com.sig.camunda.bpm_lib;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sig.camunda.bpm_dto.InternalException;
 import com.sig.camunda.bpm_dto.MyEventSubscription;
+import com.sig.camunda.bpm_dto.MyProcessInstance;
 import com.sig.camunda.bpm_dto.MyTask;
 
 public class CamundaEngine implements Camunda{
@@ -49,7 +51,6 @@ public class CamundaEngine implements Camunda{
 		this.formService = this.processEngine.getFormService();
 		this.repositoryService = this.processEngine.getRepositoryService();
 		this.historyService = this.processEngine.getHistoryService();
-		
 	}
 	
 	public CamundaEngine(ProcessEngine processEngine){
@@ -77,22 +78,22 @@ public class CamundaEngine implements Camunda{
 		return processInstance.getId();
 	}
 	
-	public List<String> getProcessInstances(String proccessDefinitionKey){
-		List<String> strProcessInstances = new ArrayList<>();
+	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey){
+		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).list();
 		for(ProcessInstance i: processInstances){
-			strProcessInstances.add(i.getProcessInstanceId());
+			myProcessInstances.add(convertProcessInstance(i));
 		}
-		return strProcessInstances;
+		return myProcessInstances;
 	}
 	
-	public List<String> getProcessInstances(){
-		List<String> strProcessInstances = new ArrayList<>();
+	public List<MyProcessInstance> getProcessInstances(){
+		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().list();
 		for(ProcessInstance i: processInstances){
-			strProcessInstances.add(i.getProcessInstanceId());
+			myProcessInstances.add(convertProcessInstance(i));
 		}
-		return strProcessInstances;
+		return myProcessInstances;
 	}
 
 	public void processDelete(String bpminstanceid) {
@@ -287,6 +288,15 @@ public class CamundaEngine implements Camunda{
 		myEventSubscription.setExecutionId(eventSubscription.getExecutionId());
 		myEventSubscription.setProcessInstanceID(eventSubscription.getProcessInstanceId());
 		return myEventSubscription;
+	}
+	
+	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance){
+		MyProcessInstance myProcessInstance = new MyProcessInstance();
+		myProcessInstance.setDate(new Date());
+		myProcessInstance.setBusinesskey(processInstance.getBusinessKey());
+		myProcessInstance.setInstanceid(processInstance.getProcessInstanceId());
+		myProcessInstance.setProcessdefinitionid(processInstance.getProcessDefinitionId());
+		return myProcessInstance;
 	}
 
 }
