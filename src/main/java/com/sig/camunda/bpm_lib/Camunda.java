@@ -24,6 +24,9 @@ public interface Camunda  {
 //	public String processUpdate (MyTask tarea);
 //	Actualiza la información de la instancia de proceso.
 	
+	public List<String> getProcessInstances(String proccessDefinitionKey);
+	// lee todos los procesos instanciados
+	
 	public void processDelete (String bpminstanceid);
 //	Elimina la instancia de proceso.
 	
