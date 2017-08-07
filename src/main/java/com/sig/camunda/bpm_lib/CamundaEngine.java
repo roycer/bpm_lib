@@ -85,6 +85,15 @@ public class CamundaEngine implements Camunda{
 		}
 		return strProcessInstances;
 	}
+	
+	public List<String> getProcessInstances(){
+		List<String> strProcessInstances = new ArrayList<>();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().list();
+		for(ProcessInstance i: processInstances){
+			strProcessInstances.add(i.getProcessInstanceId());
+		}
+		return strProcessInstances;
+	}
 
 	public void processDelete(String bpminstanceid) {
 		this.runtimeService.deleteProcessInstance(bpminstanceid, null);

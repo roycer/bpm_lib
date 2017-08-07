@@ -27,6 +27,9 @@ public interface Camunda  {
 	public List<String> getProcessInstances(String proccessDefinitionKey);
 	// lee todos los procesos instanciados
 	
+	public List<String> getProcessInstances();
+	// lee todos los procesos instanciados
+	
 	public void processDelete (String bpminstanceid);
 //	Elimina la instancia de proceso.
 	
