@@ -12,11 +12,10 @@ import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
-import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
+import org.camunda.bpm.engine.runtime.EventSubscription;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.DelegationState;
@@ -25,26 +24,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sig.camunda.bpm_dto.InternalException;
-import com.sig.camunda.bpm_dto.TaskDTO;
+import com.sig.camunda.bpm_dto.MyEventSubscription;
+import com.sig.camunda.bpm_dto.MyTask;
 
 public class CamundaEngine implements Camunda{
 
-	private static final Logger LOG;
-	private static final String USER_CREATOR = "usercreator";
-	private static final String CASE_PERSON = "case.person";
-	private static final String CASE_DESCRIPTION = "case.description";
-	private static final String USER_AUTHORIZATION = "user.authorization";
-	
+	private static final Logger LOG = LoggerFactory.getLogger(CamundaEngine.class);
+
 	private ProcessEngine processEngine;
 	private RuntimeService runtimeService;
 	private TaskService taskService;
 	private FormService formService;
 	private RepositoryService repositoryService;
 	private HistoryService historyService;
-	
-	static {
-		LOG = LoggerFactory.getLogger(CamundaEngine.class);
-	}
 	
 	public CamundaEngine(){
 		this.processEngine = ProcessEngines.getDefaultProcessEngine();
@@ -99,37 +91,37 @@ public class CamundaEngine implements Camunda{
 		this.runtimeService.setVariables(t.getExecutionId(), variables);
 	}
 
-	public List<TaskDTO> taskListByUser(String person) {
+	public List<MyTask> taskListByUser(String person) {
 		List<Task> tasks = this.taskService.createTaskQuery().taskAssignee(person).list();
-		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
-			taskDTOs.add(convertTask(i));
-		return taskDTOs;
+			MyTasks.add(convertTask(i));
+		return MyTasks;
 	}
 	
-	public List<TaskDTO> taskListByUserAndInstanceId(String processInstanceId, String person) {
+	public List<MyTask> taskListByUserAndInstanceId(String processInstanceId, String person) {
 		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
-		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
-			taskDTOs.add(convertTask(i));
-		return taskDTOs;
+			MyTasks.add(convertTask(i));
+		return MyTasks;
 	}
 
-	public List<TaskDTO> taskListByProcessInstanceId(String processInstanceId) {
+	public List<MyTask> taskListByProcessInstanceId(String processInstanceId) {
 		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
-			taskDTOs.add(convertTask(i));
-		return taskDTOs;
+			MyTasks.add(convertTask(i));
+		return MyTasks;
 	}
 
-	public List<TaskDTO> historyTaskListByUser(String processInstanceId, String person) {
+	public List<MyTask> historyTaskListByUser(String processInstanceId, String person) {
 		List<HistoricTaskInstance> historicTaskInstances =	this.historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
-		List<TaskDTO> taskDTOs = new ArrayList<TaskDTO>();
+		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(HistoricTaskInstance i:historicTaskInstances){
-			taskDTOs.add(convetHistoricTask(i));
+			MyTasks.add(convetHistoricTask(i));
 		}
-		return taskDTOs;
+		return MyTasks;
 	}
 
 	public void taskComplete(String bpmtaskid) {
@@ -182,7 +174,6 @@ public class CamundaEngine implements Camunda{
 			return true;
 		}
 		return false;
-		
 	}
 
 	public boolean updateDescriptionAndPerson(String processDefinitionKey, String businessKey, String description, String person) {
@@ -196,11 +187,19 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
-	public void fireEvent(String eventName, String businessKey) {
-		// TODO Auto-generated method stub
-		
+	
+	public List<MyEventSubscription> getEvents(String processInstanceId) {
+		List<EventSubscription> eventSubscriptions = this.runtimeService.createEventSubscriptionQuery().processInstanceId(processInstanceId).eventType("message").list();
+		List<MyEventSubscription> myEventSubscriptions = new ArrayList<>();
+		for(EventSubscription i : eventSubscriptions)
+			myEventSubscriptions.add(convertEventSubscription(i));
+		return myEventSubscriptions;
 	}
-
+	
+	public void fireEvent(MyEventSubscription myEventSubscription){
+		this.runtimeService.messageEventReceived(myEventSubscription.getEventName(), myEventSubscription.getExecutionId());
+	}
+	
 	public boolean deleteInstance(String processDefinitionKey, String businessKey) {
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
 		if (processInstances.size() > 0) {
@@ -231,34 +230,45 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
-	private TaskDTO convertTask(Task task){		
-		TaskDTO taskdto = new TaskDTO();
-		taskdto.setId(task.getId());
-		taskdto.setName(task.getName());
-		taskdto.setDescription(task.getDescription());
-		taskdto.setPriority(task.getPriority());
-		taskdto.setDuedate(task.getDueDate());
-		taskdto.setCreatetime(task.getCreateTime());
-		taskdto.setProcessname(task.getProcessDefinitionId());
-		taskdto.setTaskuniquename(task.getTaskDefinitionKey());
-		taskdto.setAssignee(task.getAssignee());
-		return taskdto;
+	private MyTask convertTask(Task task){		
+		MyTask myTask = new MyTask();
+		myTask.setId(task.getId());
+		myTask.setName(task.getName());
+		myTask.setDescription(task.getDescription());
+		myTask.setPriority(task.getPriority());
+		myTask.setDuedate(task.getDueDate());
+		myTask.setCreatetime(task.getCreateTime());
+		myTask.setProcessname(task.getProcessDefinitionId());
+		myTask.setTaskuniquename(task.getTaskDefinitionKey());
+		myTask.setAssignee(task.getAssignee());
+		return myTask;
 	}
 	
-	private TaskDTO convetHistoricTask(HistoricTaskInstance historicTaskInstance){
-		TaskDTO taskdto = new TaskDTO();
-		taskdto.setId(historicTaskInstance.getId());
-		taskdto.setName(historicTaskInstance.getName());
-		taskdto.setDescription(historicTaskInstance.getDescription());
-		taskdto.setPriority(historicTaskInstance.getPriority());
-		taskdto.setDuedate(historicTaskInstance.getDueDate());
-		taskdto.setProcessname(historicTaskInstance.getProcessDefinitionId());
-		taskdto.setTaskuniquename(historicTaskInstance.getTaskDefinitionKey());
-		taskdto.setAssignee(historicTaskInstance.getAssignee());
-		taskdto.setStarttime(historicTaskInstance.getStartTime());
-		taskdto.setEndtime(historicTaskInstance.getEndTime());
-		return taskdto;
+	private MyTask convetHistoricTask(HistoricTaskInstance historicTaskInstance){
+		MyTask myTask = new MyTask();
+		myTask.setId(historicTaskInstance.getId());
+		myTask.setName(historicTaskInstance.getName());
+		myTask.setDescription(historicTaskInstance.getDescription());
+		myTask.setPriority(historicTaskInstance.getPriority());
+		myTask.setDuedate(historicTaskInstance.getDueDate());
+		myTask.setProcessname(historicTaskInstance.getProcessDefinitionId());
+		myTask.setTaskuniquename(historicTaskInstance.getTaskDefinitionKey());
+		myTask.setAssignee(historicTaskInstance.getAssignee());
+		myTask.setStarttime(historicTaskInstance.getStartTime());
+		myTask.setEndtime(historicTaskInstance.getEndTime());
+		return myTask;
 	}
 	
+	private MyEventSubscription convertEventSubscription(EventSubscription eventSubscription){
+		MyEventSubscription myEventSubscription = new MyEventSubscription();
+		myEventSubscription.setId(eventSubscription.getId());
+		myEventSubscription.setActivityId(eventSubscription.getActivityId());
+		myEventSubscription.setCreated(eventSubscription.getCreated());
+		myEventSubscription.setEventName(eventSubscription.getEventName());
+		myEventSubscription.setEventType(eventSubscription.getEventType());
+		myEventSubscription.setExecutionId(eventSubscription.getExecutionId());
+		myEventSubscription.setProcessInstanceID(eventSubscription.getProcessInstanceId());
+		return myEventSubscription;
+	}
 
 }

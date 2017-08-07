@@ -7,7 +7,8 @@ import java.util.Map;
 import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 
-import com.sig.camunda.bpm_dto.TaskDTO;
+import com.sig.camunda.bpm_dto.MyEventSubscription;
+import com.sig.camunda.bpm_dto.MyTask;
 
 
 
@@ -20,7 +21,7 @@ public interface Camunda  {
 	public String processCreate (String processDefinitionKey,String businessKey,String description,String person);
 //	Crea una instancia de proceso.
 	
-//	public String processUpdate (TaskDTO tarea);
+//	public String processUpdate (MyTask tarea);
 //	Actualiza la información de la instancia de proceso.
 	
 	public void processDelete (String bpminstanceid);
@@ -35,15 +36,15 @@ public interface Camunda  {
 	public void instanceSetVariableByTaskId(String bpmtaskid, Map<String, Object> variables);
 //	Adiciona o modifica las variables de la instancia de proceso relacionada a la tarea.
 	
-	public List<TaskDTO> taskListByUser(String person);
+	public List<MyTask> taskListByUser(String person);
 //	Lee las tareas asignadas del usuario que inicio sesión en el sistema.
 	
-	public List<TaskDTO> taskListByUserAndInstanceId(String processInstanceId, String person);
+	public List<MyTask> taskListByUserAndInstanceId(String processInstanceId, String person);
 	
-	public List<TaskDTO> taskListByProcessInstanceId(String processInstanceId);
+	public List<MyTask> taskListByProcessInstanceId(String processInstanceId);
 //	Lee las tareas activas de la instancia de proceso.
 	
-	public List<TaskDTO> historyTaskListByUser(String processInstanceId, String person);
+	public List<MyTask> historyTaskListByUser(String processInstanceId, String person);
 //	Lista las tareas históricas del usuario que inicio sesión en el sistema.
 	
 	public void taskComplete(String bpmtaskid);
@@ -61,7 +62,7 @@ public interface Camunda  {
 //	public JSONArray taskCandidateListByUser();
 //	Lee las tareas que el usuario puede reclamar.
 	
-//	public List<TaskDTO> getCandidates(String taskid);
+//	public List<MyTask> getCandidates(String taskid);
 //	Lee los usuarios candidatos de una tarea activa.
 	
 	public void taskClaim(String bpmtaskid, String person);
@@ -82,7 +83,10 @@ public interface Camunda  {
 	public boolean updateDescriptionAndPerson(String processDefinitionKey,String businessKey,String description,String person);
 //	Actualiza la descripción y la persona/área de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
 	
-	public void fireEvent(String eventName,String businessKey);
+	public List<MyEventSubscription> getEvents(String processInstanceId);
+//	Lee todos los eventos de una instancia de proceso
+	
+	public void fireEvent(MyEventSubscription myEventSubscription);
 //	Dispara un evento al motor de procesos.
 	
 	public boolean deleteInstance(String processDefinitionKey,String businessKey);

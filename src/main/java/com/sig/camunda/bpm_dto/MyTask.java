@@ -2,7 +2,7 @@ package com.sig.camunda.bpm_dto;
 
 import java.util.Date;
 
-public class TaskDTO {
+public class MyTask {
 
 	private String id;
 	private String name;
@@ -16,7 +16,7 @@ public class TaskDTO {
 	private Date starttime;
 	private Date endtime;
 	
-	public TaskDTO(){
+	public MyTask(){
 		
 	}
 	public String getId() {
