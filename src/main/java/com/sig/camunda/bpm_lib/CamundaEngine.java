@@ -16,6 +16,7 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.EventSubscription;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -59,6 +60,14 @@ public class CamundaEngine implements Camunda{
 	
 	public CamundaEngine(String processEngineName){
 		this.processEngine = ProcessEngines.getProcessEngine(processEngineName);
+	}
+	
+	public List<String> getProcessDefinitions(){
+		List<String> strProcessDefinitions = new ArrayList<>();
+		List<ProcessDefinition> processDefinitions = this.repositoryService.createProcessDefinitionQuery().list();
+		for(ProcessDefinition i : processDefinitions)
+			strProcessDefinitions.add(i.getKey());
+		return strProcessDefinitions;
 	}
 	
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person) {
