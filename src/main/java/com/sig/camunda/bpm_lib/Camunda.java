@@ -36,7 +36,7 @@ public interface Camunda  {
 	
 //	public JSONObject inboxGetInfoInit();
 //	Lee la configuración inicial del motor de procesos para la bandeja de entrada.
-	
+	public void instanceSetVariable(String processInstanceId, Map<String, Object> variables);
 	public void instanceSetVariableByTaskId(String bpmtaskid ,String key,Object value);
 //	Adiciona o modifica la variable de la instancia de proceso relacionada a la tarea.
 	

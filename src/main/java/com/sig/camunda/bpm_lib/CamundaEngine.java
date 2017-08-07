@@ -100,6 +100,16 @@ public class CamundaEngine implements Camunda{
 		this.runtimeService.deleteProcessInstance(bpminstanceid, null);
 	}
 
+	public void instanceSetVariable(String processInstanceId, String key, Object value){
+		Map<String,Object> variables = new HashMap<String, Object>();;
+		variables.put(key, value);
+		instanceSetVariable(processInstanceId, variables);
+	}
+	
+	public void instanceSetVariable(String processInstanceId, Map<String, Object> variables){
+		this.runtimeService.setVariables(processInstanceId, variables);
+	}
+	
 	public void instanceSetVariableByTaskId(String bpmtaskid, String key, Object value) {
 		Task t = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult();
 		this.runtimeService.setVariable(t.getExecutionId(), key, value);
@@ -206,7 +216,6 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
-	
 	public List<MyEventSubscription> getEvents(String processInstanceId) {
 		List<EventSubscription> eventSubscriptions = this.runtimeService.createEventSubscriptionQuery().processInstanceId(processInstanceId).eventType("message").list();
 		List<MyEventSubscription> myEventSubscriptions = new ArrayList<>();
