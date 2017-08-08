@@ -26,7 +26,7 @@ public interface Camunda  {
 //	Actualiza la información de la instancia de proceso.
 	
 	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey);
-	// lee todos los procesos instanciados
+	// lee todos los procesos instanciados con respecto a una definicion de proceso
 	
 	public List<MyProcessInstance> getProcessInstances();
 	// lee todos los procesos instanciados
