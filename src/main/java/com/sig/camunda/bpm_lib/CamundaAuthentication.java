@@ -77,6 +77,15 @@ public class CamundaAuthentication {
 		return this.authorizationService.isUserAuthorized(user, groupIds, Permissions.READ, Resources.PROCESS_INSTANCE,processDefinitionKey) ;
 	}
 	
+	public List<String> getUsers(){
+	    List<String> strUsers = new ArrayList<String>();
+		List<User> users = this.identityService.createUserQuery().list();
+		for(User i : users)
+			strUsers.add(i.getId());
+		
+		return strUsers;
+	}
+	
 	
 	
 	
