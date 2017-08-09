@@ -1,107 +1,276 @@
 package com.sig.camunda.bpm_lib;
 
-
+/**
+ * @author Roycer
+ * @version 1.0
+ */
 import java.util.List;
 import java.util.Map;
-
-import org.camunda.bpm.engine.impl.util.json.JSONArray;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
-
 import com.sig.camunda.bpm_dto.MyEventSubscription;
 import com.sig.camunda.bpm_dto.MyProcessInstance;
 import com.sig.camunda.bpm_dto.MyTask;
 
-
-
+/**
+ * The Interface Camunda.
+ */
 public interface Camunda  {
 	
-	public String processCreate (String processDefinitionKey,String businessKey
-								,String description,String person,Map<String, Object> variables);
-//	Crea una instancia de proceso.
+	/**
+	 * Crea una instancia de proceso.
+	 *
+	 * @param processDefinitionKey Id del proceso BPMN
+	 * @param businessKey Clave del proceso BPMN
+	 * @param description Descripcion del proceso BPMN
+	 * @param person Username del usuario que crea una instancia de proceso
+	 * @param variables Variables de inicialización del proceso
+	 * @return Id de la instancia del proceso
+	 */
+	public String processCreate (String processDefinitionKey,String businessKey, String description,String person,Map<String, Object> variables);
 	
+	/**
+	 * Crea una instancia de proceso.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @param description the description
+	 * @param person the person
+	 * @return id de la instancia del proceso
+	 */
 	public String processCreate (String processDefinitionKey,String businessKey,String description,String person);
-//	Crea una instancia de proceso.
 	
-//	public String processUpdate (MyTask tarea);
-//	Actualiza la información de la instancia de proceso.
+	/**
+	 * Lee todos los procesos instanciados con respecto a una definicion de proceso.
+	 *
+	 * @return the process instances
+	 */
+	public List<String> getProcessDefinitions();
 	
+	/**
+	 * Lee todos los procesos instanciados.
+	 *
+	 * @param proccessDefinitionKey the proccess definition key
+	 * @return the process instances
+	 */
 	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey);
-	// lee todos los procesos instanciados con respecto a una definicion de proceso
 	
+	/**
+	 * Lee todos los procesos instanciados.
+	 *
+	 * @return the process instances
+	 */
 	public List<MyProcessInstance> getProcessInstances();
-	// lee todos los procesos instanciados
 	
+	/**
+	 * Elimina la instancia de proceso.
+	 *
+	 * @param bpminstanceid the bpminstanceid
+	 */
 	public void processDelete (String bpminstanceid);
-//	Elimina la instancia de proceso.
-	
-//	public JSONObject inboxGetInfoInit();
-//	Lee la configuración inicial del motor de procesos para la bandeja de entrada.
+		
+	/**
+	 * Adiciona o modifica la variable de la instancia de proceso relacionada a la tarea.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @param variables the variables
+	 */
 	public void instanceSetVariable(String processInstanceId, Map<String, Object> variables);
+	
+	/**
+	 * Adiciona o modifica la variable de la instancia de proceso relacionada a la tarea.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param key the key
+	 * @param value the value
+	 */
 	public void instanceSetVariableByTaskId(String bpmtaskid ,String key,Object value);
-//	Adiciona o modifica la variable de la instancia de proceso relacionada a la tarea.
 	
+	/**
+	 * Adiciona o modifica las variables de la instancia de proceso relacionada a la tarea.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param variables the variables
+	 */
 	public void instanceSetVariableByTaskId(String bpmtaskid, Map<String, Object> variables);
-//	Adiciona o modifica las variables de la instancia de proceso relacionada a la tarea.
 	
+	/**
+	 * Lee las tareas asignadas del usuario que inicio sesión en el sistema.
+	 *
+	 * @param person the person
+	 * @return the list
+	 */
 	public List<MyTask> taskListByUser(String person);
-//	Lee las tareas asignadas del usuario que inicio sesión en el sistema.
 	
+	/**
+	 * Lee las tareas asignadas del usuario que inicio sesión en el sistema en una instancia especifica.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @param person the person
+	 * @return the list
+	 */
 	public List<MyTask> taskListByUserAndInstanceId(String processInstanceId, String person);
 	
+	/**
+	 * Lee las tareas activas de la instancia de proceso.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @return the list
+	 */
 	public List<MyTask> taskListByProcessInstanceId(String processInstanceId);
-//	Lee las tareas activas de la instancia de proceso.
 	
+	/**
+	 * Lista las tareas históricas del usuario que inicio sesión en el sistema.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @param person the person
+	 * @return the list
+	 */
 	public List<MyTask> historyTaskListByUser(String processInstanceId, String person);
-//	Lista las tareas históricas del usuario que inicio sesión en el sistema.
 	
+	/**
+	 * Completa una tarea.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 */
 	public void taskComplete(String bpmtaskid);
-//	Completa una tarea.
 	
+	/**
+	 * Completa una tarea y a la vez establece la variable a la instancia de proceso.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param varKey the var key
+	 * @param varValue the var value
+	 */
 	public void taskComplete(String bpmtaskid,String varKey,Object varValue);
-//	Completa una tarea y a la vez establece la variable a la instancia de proceso.
 	
+	/**
+	 * Completa una tarea y a la vez establece las variables a la instancia de proceso.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param variables the variables
+	 */
 	public void taskComplete(String bpmtaskid,Map<String, Object> variables);
-//	Completa una tarea y a la vez establece las variables a la instancia de proceso.
 	
+	/**
+	 * Lee la definición del formulario relacionado a la tarea.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @return the JSON object
+	 */
 	public JSONObject taskGetForm(String bpmtaskid);
-//	Lee la definición del formulario relacionado a la tarea.
 	
-//	public JSONArray taskCandidateListByUser();
-//	Lee las tareas que el usuario puede reclamar.
-	
-//	public List<MyTask> getCandidates(String taskid);
-//	Lee los usuarios candidatos de una tarea activa.
-	
+	/**
+	 * Asigna la tarea al usuario que lo reclama.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param person the person
+	 */
 	public void taskClaim(String bpmtaskid, String person);
-//	Asigna la tarea al usuario que lo reclama.
 	
+	/**
+	 * Asigna la tarea a un usuario específico.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param person the person
+	 */
 	public void taskAssignee(String bpmtaskid,String person);
-//	Asigna la tarea a un usuario específico.
 	
+	/**
+	 * Actualiza la descripción de la instancia de proceso relacionada a la tarea.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param description the description
+	 */
 	public void taskUpdateDescription(String bpmtaskid,String description);
-//	Actualiza la descripción de la instancia de proceso relacionada a la tarea.
 	
+	/**
+	 * Delega una tarea a un usuario específico.
+	 *
+	 * @param bpmtaskid the bpmtaskid
+	 * @param person the person
+	 */
 	public void taskDelegate(String bpmtaskid,String person);
-//	Delega una tarea a un usuario específico.
 	
+	/**
+	 * Actualiza la descripción de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @param description the description
+	 * @return true, if successful
+	 */
 	public boolean updateDescription(String processDefinitionKey,String businessKey,String description);
-//	Actualiza la descripción de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
 	
+	/**
+	 * Actualiza la descripción y la persona/área de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @param description the description
+	 * @param person the person
+	 * @return true, if successful
+	 */
 	public boolean updateDescriptionAndPerson(String processDefinitionKey,String businessKey,String description,String person);
-//	Actualiza la descripción y la persona/área de la instancia de proceso relacionada a la definición de proceso y la clave de negocio.
 	
+	/**
+	 * Lee todos los eventos de una instancia de proceso.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @return the events
+	 */
 	public List<MyEventSubscription> getEvents(String processInstanceId);
-//	Lee todos los eventos de una instancia de proceso
 	
+	/**
+	 * Dispara un evento al motor de procesos.
+	 *
+	 * @param myEventSubscription the my event subscription
+	 */
 	public void fireEvent(MyEventSubscription myEventSubscription);
-//	Dispara un evento al motor de procesos.
 	
+	/**
+	 * Elimina la instancia de proceso relacionado a la clave de negocio.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @return true, if successful
+	 */
 	public boolean deleteInstance(String processDefinitionKey,String businessKey);
-//	Elimina la instancia de proceso relacionado a la clave de negocio.
 	
+	/**
+	 * Suspende la instancia de proceso.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @return true, if successful
+	 */
 	public boolean suspendInstance(String processDefinitionKey,String businessKey);
-//	Suspende la instancia de proceso
+	
+	/**
+	 * Activa la instancia de proceso previamente suspendida.
+	 *
+	 * @param processDefinitionKey the process definition key
+	 * @param businessKey the business key
+	 * @return true, if successful
+	 */
 	public boolean activateInstance(String processDefinitionKey,String businessKey);
-//	Activa la instancia de proceso previamente suspendida.
+	
+	
+	/**
+	 * Gets the variables.
+	 *
+	 * @param processInstanceId the process instance id
+	 * @return the variables
+	 */
+	public Map<String,Object> getVariables(String processInstanceId);
+	
+	
+	/**
+	 * Gets the variable.
+	 *
+	 * @param executionId the execution id
+	 * @param variableName the variable name
+	 * @return the variable
+	 */
+	public Object getVariable(String executionId, String variableName);
 	
 }

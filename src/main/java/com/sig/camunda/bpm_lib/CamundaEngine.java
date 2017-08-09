@@ -1,5 +1,9 @@
 package com.sig.camunda.bpm_lib;
 
+/**
+ * @author Roycer
+ * @version 1.0
+ */
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,8 +28,6 @@ import org.camunda.bpm.engine.task.DelegationState;
 import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sig.camunda.bpm_dto.InternalException;
 import com.sig.camunda.bpm_dto.MyEventSubscription;
 import com.sig.camunda.bpm_dto.MyProcessInstance;
 import com.sig.camunda.bpm_dto.MyTask;
@@ -41,27 +43,39 @@ public class CamundaEngine implements Camunda{
 	private RepositoryService repositoryService;
 	private HistoryService historyService;
 	
+	/**
+	 * Inicializa los servicios de Camunda
+	 */
 	public CamundaEngine(){
 		this.processEngine = ProcessEngines.getDefaultProcessEngine();
-		if (this.processEngine == null) {
-			throw new InternalException("DefaultProcessEngine no puede ser NULL");
-		}
 		this.runtimeService = this.processEngine.getRuntimeService();
 		this.taskService = this.processEngine.getTaskService();
-
 		this.formService = this.processEngine.getFormService();
 		this.repositoryService = this.processEngine.getRepositoryService();
 		this.historyService = this.processEngine.getHistoryService();
 	}
 	
+	/**
+	 * Inicializa los servicios de Camunda.
+	 *
+	 * @param processEngine the process engine
+	 */
 	public CamundaEngine(ProcessEngine processEngine){
 		this.processEngine = processEngine;
 	}
 	
+	/**
+	 * Inicializa los servicios de Camunda.
+	 *
+	 * @param processEngineName the process engine name
+	 */
 	public CamundaEngine(String processEngineName){
 		this.processEngine = ProcessEngines.getProcessEngine(processEngineName);
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public List<String> getProcessDefinitions(){
 		List<String> strProcessDefinitions = new ArrayList<>();
 		List<ProcessDefinition> processDefinitions = this.repositoryService.createProcessDefinitionQuery().active().latestVersion().list();
@@ -70,10 +84,16 @@ public class CamundaEngine implements Camunda{
 		return strProcessDefinitions;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person) {
 		return processCreate(processDefinitionKey,businessKey,description,person,null);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public String processCreate(String processDefinitionKey, String businessKey, String description, String person, Map<String, Object> variables) {
 		
 		if (variables == null) 
@@ -87,6 +107,9 @@ public class CamundaEngine implements Camunda{
 		return processInstance.getId();
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey){
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).active().list();
@@ -96,6 +119,9 @@ public class CamundaEngine implements Camunda{
 		return myProcessInstances;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyProcessInstance> getProcessInstances(){
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().active().list();
@@ -105,30 +131,48 @@ public class CamundaEngine implements Camunda{
 		return myProcessInstances;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void processDelete(String bpminstanceid) {
 		this.runtimeService.deleteProcessInstance(bpminstanceid, null);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void instanceSetVariable(String processInstanceId, String key, Object value){
 		Map<String,Object> variables = new HashMap<String, Object>();;
 		variables.put(key, value);
 		instanceSetVariable(processInstanceId, variables);
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public void instanceSetVariable(String processInstanceId, Map<String, Object> variables){
 		this.runtimeService.setVariables(processInstanceId, variables);
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public void instanceSetVariableByTaskId(String bpmtaskid, String key, Object value) {
 		Task t = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult();
 		this.runtimeService.setVariable(t.getExecutionId(), key, value);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void instanceSetVariableByTaskId(String bpmtaskid, Map<String, Object> variables) {
 		Task t = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult();
 		this.runtimeService.setVariables(t.getExecutionId(), variables);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyTask> taskListByUser(String person) {
 		List<Task> tasks = this.taskService.createTaskQuery().taskAssignee(person).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
@@ -137,6 +181,9 @@ public class CamundaEngine implements Camunda{
 		return MyTasks;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyTask> taskListByUserAndInstanceId(String processInstanceId, String person) {
 		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(person).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
@@ -145,6 +192,9 @@ public class CamundaEngine implements Camunda{
 		return MyTasks;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyTask> taskListByProcessInstanceId(String processInstanceId) {
 		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
@@ -153,6 +203,9 @@ public class CamundaEngine implements Camunda{
 		return MyTasks;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyTask> historyTaskListByUser(String processInstanceId, String person) {
 		List<HistoricTaskInstance> historicTaskInstances =	this.historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
@@ -162,16 +215,25 @@ public class CamundaEngine implements Camunda{
 		return MyTasks;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskComplete(String bpmtaskid) {
 		taskComplete(bpmtaskid,null);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskComplete(String bpmtaskid, String varKey, Object varValue) {
 		Map<String,Object> variables = new HashMap<String, Object>();;
 		variables.put(varKey, varValue);
 		taskComplete(bpmtaskid,variables);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskComplete(String bpmtaskid, Map<String, Object> variables) {
 		DelegationState state = this.taskService.createTaskQuery().taskId(bpmtaskid).singleResult().getDelegationState();
 		if (DelegationState.PENDING.equals(state))
@@ -180,6 +242,9 @@ public class CamundaEngine implements Camunda{
 			this.taskService.complete(bpmtaskid, variables);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public JSONObject taskGetForm(String bpmtaskid) {
 		JSONObject jsonObject = new JSONObject();
 		TaskFormData taskFormData = this.formService.getTaskFormData(bpmtaskid);
@@ -188,22 +253,37 @@ public class CamundaEngine implements Camunda{
 		return jsonObject;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskClaim(String bpmtaskid, String person) {
 		this.taskService.claim(bpmtaskid, person);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskAssignee(String bpmtaskid, String person) {
 		this.taskService.setAssignee(bpmtaskid, person);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskUpdateDescription(String bpmtaskid, String description) {
 		
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public void taskDelegate(String bpmtaskid, String person) {
 		this.taskService.delegateTask(bpmtaskid,person);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public boolean updateDescription(String processDefinitionKey, String businessKey, String description) {
 		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
 		if (executions.size() > 0) {
@@ -214,6 +294,9 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public boolean updateDescriptionAndPerson(String processDefinitionKey, String businessKey, String description, String person) {
 		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
 		if (executions.size() > 0) {
@@ -225,6 +308,9 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public List<MyEventSubscription> getEvents(String processInstanceId) {
 		List<EventSubscription> eventSubscriptions = this.runtimeService.createEventSubscriptionQuery().processInstanceId(processInstanceId).eventType("message").list();
 		List<MyEventSubscription> myEventSubscriptions = new ArrayList<>();
@@ -233,10 +319,16 @@ public class CamundaEngine implements Camunda{
 		return myEventSubscriptions;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public void fireEvent(MyEventSubscription myEventSubscription){
 		this.runtimeService.messageEventReceived(myEventSubscription.getEventName(), myEventSubscription.getExecutionId());
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	public boolean deleteInstance(String processDefinitionKey, String businessKey) {
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
@@ -247,6 +339,9 @@ public class CamundaEngine implements Camunda{
 		return false;
 	} 
 
+	/**
+	 * @inheritDoc
+	 */
 	public boolean suspendInstance(String processDefinitionKey, String businessKey) {
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
@@ -257,6 +352,9 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public boolean activateInstance(String processDefinitionKey, String businessKey) {
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
@@ -267,6 +365,9 @@ public class CamundaEngine implements Camunda{
 		return false;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	private MyTask convertTask(Task task){		
 		MyTask myTask = new MyTask();
 		myTask.setId(task.getId());
@@ -281,6 +382,9 @@ public class CamundaEngine implements Camunda{
 		return myTask;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	private MyTask convetHistoricTask(HistoricTaskInstance historicTaskInstance){
 		MyTask myTask = new MyTask();
 		myTask.setId(historicTaskInstance.getId());
@@ -296,6 +400,9 @@ public class CamundaEngine implements Camunda{
 		return myTask;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	private MyEventSubscription convertEventSubscription(EventSubscription eventSubscription){
 		MyEventSubscription myEventSubscription = new MyEventSubscription();
 		myEventSubscription.setId(eventSubscription.getId());
@@ -308,6 +415,9 @@ public class CamundaEngine implements Camunda{
 		return myEventSubscription;
 	}
 	
+	/**
+	 * @inheritDoc
+	 */
 	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance){
 		MyProcessInstance myProcessInstance = new MyProcessInstance();
 		myProcessInstance.setDate(new Date());
@@ -315,6 +425,20 @@ public class CamundaEngine implements Camunda{
 		myProcessInstance.setInstanceid(processInstance.getProcessInstanceId());
 		myProcessInstance.setProcessdefinitionid(processInstance.getProcessDefinitionId());
 		return myProcessInstance;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public Map<String, Object> getVariables(String processInstanceId) {
+		return this.runtimeService.getVariables(processInstanceId);
+	}
+	
+	/**
+	 * @inheritDoc
+	 */
+	public Object getVariable(String processInstanceId, String variableName) {
+		return this.runtimeService.getVariable(processInstanceId,variableName);
 	}
 
 }
