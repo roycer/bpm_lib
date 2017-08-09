@@ -64,7 +64,7 @@ public class CamundaEngine implements Camunda{
 	
 	public List<String> getProcessDefinitions(){
 		List<String> strProcessDefinitions = new ArrayList<>();
-		List<ProcessDefinition> processDefinitions = this.repositoryService.createProcessDefinitionQuery().list();
+		List<ProcessDefinition> processDefinitions = this.repositoryService.createProcessDefinitionQuery().active().latestVersion().list();
 		for(ProcessDefinition i : processDefinitions)
 			strProcessDefinitions.add(i.getKey());
 		return strProcessDefinitions;
@@ -89,7 +89,7 @@ public class CamundaEngine implements Camunda{
 	
 	public List<MyProcessInstance> getProcessInstances(String proccessDefinitionKey){
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).active().list();
 		for(ProcessInstance i: processInstances){
 			myProcessInstances.add(convertProcessInstance(i));
 		}
@@ -98,7 +98,7 @@ public class CamundaEngine implements Camunda{
 	
 	public List<MyProcessInstance> getProcessInstances(){
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().active().list();
 		for(ProcessInstance i: processInstances){
 			myProcessInstances.add(convertProcessInstance(i));
 		}
@@ -130,7 +130,7 @@ public class CamundaEngine implements Camunda{
 	}
 
 	public List<MyTask> taskListByUser(String person) {
-		List<Task> tasks = this.taskService.createTaskQuery().taskAssignee(person).list();
+		List<Task> tasks = this.taskService.createTaskQuery().taskAssignee(person).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
 			MyTasks.add(convertTask(i));
@@ -138,7 +138,7 @@ public class CamundaEngine implements Camunda{
 	}
 	
 	public List<MyTask> taskListByUserAndInstanceId(String processInstanceId, String person) {
-		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(person).list();
+		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).taskAssignee(person).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
 			MyTasks.add(convertTask(i));
@@ -146,7 +146,7 @@ public class CamundaEngine implements Camunda{
 	}
 
 	public List<MyTask> taskListByProcessInstanceId(String processInstanceId) {
-		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
+		List<Task> tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).active().list();
 		List<MyTask> MyTasks = new ArrayList<MyTask>();
 		for(Task i:tasks)
 			MyTasks.add(convertTask(i));
@@ -238,7 +238,7 @@ public class CamundaEngine implements Camunda{
 	}
 	
 	public boolean deleteInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
 			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
 			this.runtimeService.deleteProcessInstance(pi.getProcessInstanceId(), "Eliminado por el usuario");
@@ -248,7 +248,7 @@ public class CamundaEngine implements Camunda{
 	} 
 
 	public boolean suspendInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
 			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
 			this.runtimeService.suspendProcessInstanceById(pi.getProcessInstanceId());
@@ -258,7 +258,7 @@ public class CamundaEngine implements Camunda{
 	}
 
 	public boolean activateInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
 		if (processInstances.size() > 0) {
 			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
 			this.runtimeService.activateProcessInstanceById(pi.getProcessInstanceId());
