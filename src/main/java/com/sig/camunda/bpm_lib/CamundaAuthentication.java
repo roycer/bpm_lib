@@ -41,7 +41,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public void createUser(String username, String firstName, String lastName, String password, String email){
 		User user = this.identityService.newUser(username);
@@ -53,7 +53,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public void userAuthorizationCreate(String user, String resource){
 		Authorization auth = this.authorizationService.createNewAuthorization(AUTH_TYPE_GRANT);
@@ -66,7 +66,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public void userAuthorizationRead(String user, String resource){
 		Authorization auth = this.authorizationService.createNewAuthorization(AUTH_TYPE_GRANT);
@@ -78,7 +78,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public boolean isAuthorizationCreateProcessInstance(String user, String processDefinitionKey){
 	    List<Group> groups = processEngine.getIdentityService().createGroupQuery().groupMember(user).list();
@@ -90,7 +90,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public boolean isAuthorizationReadProcessInstance(String user, String processDefinitionKey){
 	    List<Group> groups = processEngine.getIdentityService().createGroupQuery().groupMember(user).list();
@@ -102,7 +102,7 @@ public class CamundaAuthentication implements CamundaAuth{
 	}
 	
 	/**
-	 * @inheritDoc
+	 * @see
 	 */
 	public List<String> getUsers(){
 	    List<String> strUsers = new ArrayList<String>();
