@@ -17,6 +17,7 @@ import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.impl.util.json.JSONObject;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
@@ -419,9 +420,10 @@ public class CamundaEngine implements Camunda{
 	 * @see
 	 */
 	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance){
+		HistoricProcessInstance historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
 		
 		MyProcessInstance myProcessInstance = new MyProcessInstance();
-		myProcessInstance.setDate(new Date());
+		myProcessInstance.setDate(historicProcessInstance.getStartTime());
 		myProcessInstance.setBusinesskey(processInstance.getBusinessKey());
 		myProcessInstance.setInstanceid(processInstance.getProcessInstanceId());
 		myProcessInstance.setProcessdefinitionid(processInstance.getProcessDefinitionId());
