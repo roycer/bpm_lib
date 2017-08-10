@@ -237,21 +237,16 @@ public interface Camunda  {
 	/**
 	 * Suspende la instancia de proceso.
 	 *
-	 * @param processDefinitionKey the process definition key
-	 * @param businessKey the business key
-	 * @return true, if successful
+	 * @param processInstanceId instancia de proceso
 	 */
-	public boolean suspendInstance(String processDefinitionKey,String businessKey);
+	public void suspendInstance(String processInstanceId);
 	
 	/**
 	 * Activa la instancia de proceso previamente suspendida.
 	 *
-	 * @param processDefinitionKey the process definition key
-	 * @param businessKey the business key
-	 * @return true, if successful
+	 * @param processInstanceId the process instance id
 	 */
-	public boolean activateInstance(String processDefinitionKey,String businessKey);
-	
+	public void activateInstance(String processInstanceId);
 	
 	/**
 	 * Gets the variables.

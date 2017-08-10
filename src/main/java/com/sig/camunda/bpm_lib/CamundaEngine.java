@@ -5,7 +5,6 @@ package com.sig.camunda.bpm_lib;
  * @version 1.0
  */
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -272,7 +271,7 @@ public class CamundaEngine implements Camunda{
 	 * @see
 	 */
 	public void taskUpdateDescription(String bpmtaskid, String description) {
-		
+		this.taskService.setVariable(bpmtaskid, DESCRIPTION, description);
 	}
 
 	/**
@@ -337,27 +336,15 @@ public class CamundaEngine implements Camunda{
 	/**
 	 * @see
 	 */
-	public boolean suspendInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
-		if (processInstances.size() > 0) {
-			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
-			this.runtimeService.suspendProcessInstanceById(pi.getProcessInstanceId());
-			return true;
-		}
-		return false;
+	public void suspendInstance(String processInstanceId) {
+		this.runtimeService.suspendProcessInstanceById(processInstanceId);
 	}
 
 	/**
 	 * @see
 	 */
-	public boolean activateInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
-		if (processInstances.size() > 0) {
-			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
-			this.runtimeService.activateProcessInstanceById(pi.getProcessInstanceId());
-			return true;
-		}
-		return false;
+	public void activateInstance(String processInstanceId) {
+		this.runtimeService.activateProcessInstanceById(processInstanceId);
 	}
 
 	/**
