@@ -330,14 +330,8 @@ public class CamundaEngine implements Camunda{
 	/**
 	 * @see
 	 */
-	public boolean deleteInstance(String processDefinitionKey, String businessKey) {
-		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).active().list();
-		if (processInstances.size() > 0) {
-			ProcessInstance pi = (ProcessInstance) processInstances.get(0);
-			this.runtimeService.deleteProcessInstance(pi.getProcessInstanceId(), "Eliminado por el usuario");
-			return true;
-		}
-		return false;
+	public void deleteInstance(String processInstanceId) {
+		this.runtimeService.deleteProcessInstance(processInstanceId, "Eliminado por el usuario");
 	} 
 
 	/**

@@ -228,13 +228,11 @@ public interface Camunda  {
 	public void fireEvent(MyEventSubscription myEventSubscription);
 	
 	/**
-	 * Elimina la instancia de proceso relacionado a la clave de negocio.
+	 * Elimina una instancia de proceso.
 	 *
-	 * @param processDefinitionKey the process definition key
-	 * @param businessKey the business key
-	 * @return true, if successful
+	 * @param processInstanceId una instancia de proceso
 	 */
-	public boolean deleteInstance(String processDefinitionKey,String businessKey);
+	public void deleteInstance(String processInstanceId);
 	
 	/**
 	 * Suspende la instancia de proceso.
