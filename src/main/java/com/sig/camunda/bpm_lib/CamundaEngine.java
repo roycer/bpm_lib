@@ -34,7 +34,8 @@ import com.sig.camunda.bpm_dto.MyTask;
 public class CamundaEngine implements Camunda{
 
 	private static final Logger LOG = LoggerFactory.getLogger(CamundaEngine.class);
-
+	private static final String DESCRIPTION = "descripcion";
+	private static final String USER = "user";
 	private ProcessEngine processEngine;
 	private RuntimeService runtimeService;
 	private TaskService taskService;
@@ -97,10 +98,10 @@ public class CamundaEngine implements Camunda{
 		
 		if (variables == null) 
 			variables = new HashMap();	
-		if ((!(variables.containsKey("description"))) && (description != null))
-			variables.put("description", description);
-		if ((!(variables.containsKey("person"))) && (person != null))
-			variables.put("person", person);
+		if ((!(variables.containsKey(DESCRIPTION))) && (description != null))
+			variables.put(DESCRIPTION, description);
+		if ((!(variables.containsKey(USER))) && (person != null))
+			variables.put(USER, person);
 		
 		ProcessInstance processInstance = this.runtimeService.startProcessInstanceByKey(processDefinitionKey,businessKey,variables);
 		return processInstance.getId();
@@ -418,6 +419,7 @@ public class CamundaEngine implements Camunda{
 	 * @see
 	 */
 	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance){
+		
 		MyProcessInstance myProcessInstance = new MyProcessInstance();
 		myProcessInstance.setDate(new Date());
 		myProcessInstance.setBusinesskey(processInstance.getBusinessKey());
@@ -430,7 +432,20 @@ public class CamundaEngine implements Camunda{
 	 * @see
 	 */
 	public Map<String, Object> getVariables(String processInstanceId) {
-		return this.runtimeService.getVariables(processInstanceId);
+		
+		Map<String,Object> allVariables = this.runtimeService.getVariables(processInstanceId);
+		Map<String, Object> myVariables = new HashMap<String,Object>();
+		
+		
+		    for (Map.Entry<String, Object> i : allVariables.entrySet()) {
+		    	
+		        String key = i.getKey();
+		        Object value = i.getValue();
+		        if(key.equals(DESCRIPTION) || key.equals(USER)) continue;
+		        myVariables.put(key, value);
+		    }
+		
+		return myVariables;
 	}
 	
 	/**

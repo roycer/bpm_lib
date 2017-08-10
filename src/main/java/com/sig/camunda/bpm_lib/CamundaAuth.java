@@ -14,28 +14,28 @@ public interface CamundaAuth {
 	/**
 	 * Verifica si usuario esta registrado.
 	 *
-	 * @param user the user
-	 * @param password the password
-	 * @return true, if successful
+	 * @param user username del usuario
+	 * @param password clave del usuario
+	 * @return true, si usuario esta registrado
 	 */
 	public boolean loginUser(String user, String password);
 	
 	/**
 	 * Crea nuevo usuario.
 	 *
-	 * @param username the username
-	 * @param firstName the first name
-	 * @param lastName the last name
-	 * @param password the password
-	 * @param email the email
+	 * @param username username del usuario
+	 * @param firstName nombre del usuario
+	 * @param lastName apellido del usuario
+	 * @param password clave del usuario
+	 * @param email correo del usuario
 	 */
 	public void createUser(String username, String firstName, String lastName, String password, String email);
 	
 	/**
 	 * Crea autorización para  crear instancias de procesos por un usuario.
 	 *
-	 * @param user the user
-	 * @param resource the resource
+	 * @param user username del usuario
+	 * @param resource identificador del proceso
 	 */
 	public void userAuthorizationCreate(String user, String resource);
 	
