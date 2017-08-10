@@ -54,7 +54,7 @@ public interface CamundaAuth {
 	 * @param processDefinitionKey the process definition key
 	 * @return true, if is authorization create process instance
 	 */
-	public boolean isAuthorizationCreateProcessDefinition(String user, String processDefinition);
+	public boolean isAuthorizationReadProcessDefinition(String user, String processDefinition);
 	
 	/**
 	 * Verifica autorización de un usuario para crear instancias de proceso.
