@@ -21,8 +21,8 @@ public interface Camunda  {
 	 *
 	 * @param processDefinitionKey Id del proceso BPMN
 	 * @param businessKey Clave del proceso BPMN
-	 * @param description Descripcion del proceso BPMN
-	 * @param person Username del usuario que crea una instancia de proceso
+	 * @param description Descripción del proceso
+	 * @param person Username del del usuario
 	 * @param variables Variables de inicialización del proceso
 	 * @return Id de la instancia del proceso
 	 */
@@ -40,7 +40,7 @@ public interface Camunda  {
 	public String processCreate (String processDefinitionKey,String businessKey,String description,String person);
 	
 	/**
-	 * Lee todos los procesos instanciados con respecto a una definicion de proceso.
+	 * Lee todos los procesos instanciados con respecto a una definición de proceso.
 	 *
 	 * @return the process instances
 	 */

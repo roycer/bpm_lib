@@ -32,7 +32,7 @@ public interface CamundaAuth {
 	public void createUser(String username, String firstName, String lastName, String password, String email);
 	
 	/**
-	 * Crea autorizacion para  crear instancias de procesos por un usuario.
+	 * Crea autorización para  crear instancias de procesos por un usuario.
 	 *
 	 * @param user the user
 	 * @param resource the resource
@@ -40,7 +40,7 @@ public interface CamundaAuth {
 	public void userAuthorizationCreate(String user, String resource);
 	
 	/**
-	 * Crea autorizacion para leer procesos.
+	 * Crea autorización para leer procesos.
 	 *
 	 * @param user the user
 	 * @param resource the resource
@@ -48,7 +48,16 @@ public interface CamundaAuth {
 	public void userAuthorizationRead(String user, String resource);
 	
 	/**
-	 * Verifica autorizacion de un usuario para crear instancias de proceso.
+	 * Verifica autorización de un usuario para ver procesos.
+	 *
+	 * @param user the user
+	 * @param processDefinitionKey the process definition key
+	 * @return true, if is authorization create process instance
+	 */
+	public boolean isAuthorizationCreateProcessDefinition(String user, String processDefinition);
+	
+	/**
+	 * Verifica autorización de un usuario para crear instancias de proceso.
 	 *
 	 * @param user the user
 	 * @param processDefinitionKey the process definition key
@@ -57,7 +66,7 @@ public interface CamundaAuth {
 	public boolean isAuthorizationCreateProcessInstance(String user, String processDefinitionKey);
 	
 	/**
-	 * Verifica autorizacion de un usuario para ver Instancias de procesos.
+	 * Verifica autorización de un usuario para ver Instancias de procesos.
 	 *
 	 * @param user the user
 	 * @param processDefinitionKey the process definition key

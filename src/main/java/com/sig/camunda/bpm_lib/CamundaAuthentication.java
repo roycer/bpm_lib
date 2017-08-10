@@ -80,6 +80,18 @@ public class CamundaAuthentication implements CamundaAuth{
 	/**
 	 * @see
 	 */
+	public boolean isAuthorizationCreateProcessDefinition(String user, String processDefinition){
+		 List<Group> groups = processEngine.getIdentityService().createGroupQuery().groupMember(user).list();
+		    List<String> groupIds = new ArrayList<String>();
+		    for (Group group : groups) 
+		    	groupIds.add(group.getId());
+		    
+			return this.authorizationService.isUserAuthorized(user, groupIds, Permissions.CREATE, Resources.PROCESS_DEFINITION,processDefinition) ;
+	}
+	
+	/**
+	 * @see
+	 */
 	public boolean isAuthorizationCreateProcessInstance(String user, String processDefinitionKey){
 	    List<Group> groups = processEngine.getIdentityService().createGroupQuery().groupMember(user).list();
 	    List<String> groupIds = new ArrayList<String>();
