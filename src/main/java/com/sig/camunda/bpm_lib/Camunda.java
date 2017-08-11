@@ -60,13 +60,6 @@ public interface Camunda  {
 	 * @return the process instances
 	 */
 	public List<MyProcessInstance> getProcessInstances();
-	
-	/**
-	 * Elimina la instancia de proceso.
-	 *
-	 * @param bpminstanceid the bpminstanceid
-	 */
-	public void processDelete (String bpminstanceid);
 		
 	/**
 	 * Adiciona o modifica la variable de la instancia de proceso relacionada a la tarea.

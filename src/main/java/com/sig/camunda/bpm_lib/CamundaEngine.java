@@ -134,13 +134,6 @@ public class CamundaEngine implements Camunda{
 	/**
 	 * @see
 	 */
-	public void processDelete(String bpminstanceid) {
-		this.runtimeService.deleteProcessInstance(bpminstanceid, null);
-	}
-
-	/**
-	 * @see
-	 */
 	public void instanceSetVariable(String processInstanceId, String key, Object value){
 		Map<String,Object> variables = new HashMap<String, Object>();;
 		variables.put(key, value);
