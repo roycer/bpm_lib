@@ -281,7 +281,7 @@ public class CamundaEngine implements Camunda{
 		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
 		if (executions.size() > 0) {
 			Execution execution = (Execution) executions.get(0);
-			this.runtimeService.setVariable(execution.getId(), "description", description);
+			this.runtimeService.setVariable(execution.getId(), DESCRIPTION, description);
 			return true;
 		}
 		return false;
@@ -294,8 +294,8 @@ public class CamundaEngine implements Camunda{
 		List<Execution> executions = this.runtimeService.createExecutionQuery().processDefinitionKey(processDefinitionKey).processInstanceBusinessKey(businessKey).list();
 		if (executions.size() > 0) {
 			Execution execution = (Execution) executions.get(0);
-			this.runtimeService.setVariable(execution.getId(), "description", description);
-			this.runtimeService.setVariable(execution.getId(), "person", person);
+			this.runtimeService.setVariable(execution.getId(), DESCRIPTION, description);
+			this.runtimeService.setVariable(execution.getId(), USER, person);
 			return true;
 		}
 		return false;
