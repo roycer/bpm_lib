@@ -114,7 +114,7 @@ public class CamundaEngine implements Camunda{
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().processDefinitionKey(proccessDefinitionKey).active().list();
 		for(ProcessInstance i: processInstances){
-			myProcessInstances.add(convertProcessInstance(i));
+			myProcessInstances.add(convertProcessInstance(i,true,false));
 		}
 		return myProcessInstances;
 	}
@@ -126,7 +126,19 @@ public class CamundaEngine implements Camunda{
 		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
 		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().active().list();
 		for(ProcessInstance i: processInstances){
-			myProcessInstances.add(convertProcessInstance(i));
+			myProcessInstances.add(convertProcessInstance(i,true,false));
+		}
+		return myProcessInstances;
+	}
+	
+	/**
+	 * @see
+	 */
+	public List<MyProcessInstance> getProcessInstancesSuspend(){
+		List<MyProcessInstance> myProcessInstances = new ArrayList<>();
+		List<ProcessInstance> processInstances = this.runtimeService.createProcessInstanceQuery().suspended().list();
+		for(ProcessInstance i: processInstances){
+			myProcessInstances.add(convertProcessInstance(i,false,true));
 		}
 		return myProcessInstances;
 	}
@@ -393,14 +405,15 @@ public class CamundaEngine implements Camunda{
 	/**
 	 * @see
 	 */
-	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance){
+	private MyProcessInstance convertProcessInstance(ProcessInstance processInstance,Boolean statusActive, Boolean statusSuspend){
 		HistoricProcessInstance historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
-		
 		MyProcessInstance myProcessInstance = new MyProcessInstance();
 		myProcessInstance.setDate(historicProcessInstance.getStartTime());
 		myProcessInstance.setBusinesskey(processInstance.getBusinessKey());
 		myProcessInstance.setInstanceid(processInstance.getProcessInstanceId());
 		myProcessInstance.setProcessdefinitionid(processInstance.getProcessDefinitionId());
+		myProcessInstance.setActive(statusActive);
+		myProcessInstance.setSuspend(statusSuspend);
 		return myProcessInstance;
 	}
 

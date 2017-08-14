@@ -6,6 +6,7 @@ package com.sig.camunda.bpm_dto;
  */
 import java.util.Date;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class MyProcessInstance.
  */
@@ -23,6 +24,49 @@ public class MyProcessInstance {
 	/** The processdefinitionid. */
 	String processdefinitionid;
 	
+	/** The activo. */
+	Boolean active;
+	
+	/**
+	 * Gets the active.
+	 *
+	 * @return the active
+	 */
+	public Boolean getActive() {
+		return active;
+	}
+
+	/**
+	 * Sets the active.
+	 *
+	 * @param active the new active
+	 */
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	/** The suspend. */
+	Boolean suspend;
+	
+	/**
+	 * Gets the suspend.
+	 *
+	 * @return the suspend
+	 */
+	public Boolean getSuspend() {
+		return suspend;
+	}
+
+	/**
+	 * Sets the suspend.
+	 *
+	 * @param suspend the new suspend
+	 */
+	public void setSuspend(Boolean suspend) {
+		this.suspend = suspend;
+	}
+
+
 	/**
 	 * Instantiates a new my process instance.
 	 */
